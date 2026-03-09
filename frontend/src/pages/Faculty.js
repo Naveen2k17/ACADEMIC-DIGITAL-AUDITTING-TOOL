@@ -1,84 +1,48 @@
-import { Container, Form, Button, Card, Row, Col, FloatingLabel, Table } from "react-bootstrap";
+import { Container, Form, Button, Card, Row, Col, Badge, Table } from "react-bootstrap";
 import API from "../services/api";
 import { useState, useEffect } from "react";
 
+// Shared pattern for Faculty/Students/Courses/Infra
 export default function Faculty() {
   const [d, setD] = useState({});
   const [list, setList] = useState([]);
-
-  const fetchData = async () => {
-    const res = await API.get("/faculty");
-    setList(res.data);
-  };
-
+  
+  const fetchData = async () => { const res = await API.get("/faculty"); setList(res.data); };
   useEffect(() => { fetchData(); }, []);
-
-  const save = async () => {
-    await API.post("/faculty", d);
-    alert("Saved");
-    fetchData(); // Refresh list
-    setD({}); // Clear form (optional)
-  };
 
   return (
     <Container className="mt-4">
       <Row>
         <Col md={4}>
-          <Card className="shadow-sm border-0 mb-4">
-            <Card.Header className="bg-white border-bottom">
-              <h5 className="mb-0 text-primary">Add Faculty</h5>
-            </Card.Header>
+          <Card className="shadow-sm sticky-top" style={{ top: '100px' }}>
+            <Card.Header className="bg-white py-3 fw-bold text-primary">Add Faculty Record</Card.Header>
             <Card.Body>
-              <Form>
-                <FloatingLabel label="Faculty Name" className="mb-3">
-                  <Form.Control 
-                    placeholder="Name" 
-                    onChange={e => setD({ ...d, name: e.target.value })} 
-                  />
-                </FloatingLabel>
-                
-                <FloatingLabel label="Qualification" className="mb-3">
-                  <Form.Control 
-                    placeholder="Qualification" 
-                    onChange={e => setD({ ...d, qualification: e.target.value })} 
-                  />
-                </FloatingLabel>
-
-                <FloatingLabel label="Publications" className="mb-3">
-                  <Form.Control 
-                    type="number"
-                    placeholder="Publications" 
-                    onChange={e => setD({ ...d, publications: e.target.value })} 
-                  />
-                </FloatingLabel>
-
-                <Button variant="primary" className="w-100" onClick={save}>Save Record</Button>
-              </Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Full Name</Form.Label>
+                <Form.Control placeholder="Dr. John Doe" onChange={e => setD({ ...d, name: e.target.value })} />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Qualification</Form.Label>
+                <Form.Control placeholder="Ph.D. Computer Science" onChange={e => setD({ ...d, qualification: e.target.value })} />
+              </Form.Group>
+              <Button className="w-100" onClick={async () => { await API.post("/faculty", d); fetchData(); }}>Save Record</Button>
             </Card.Body>
           </Card>
         </Col>
-        
         <Col md={8}>
-          <Card className="shadow-sm border-0">
-            <Card.Header className="bg-white border-bottom">
-              <h5 className="mb-0 text-secondary">Faculty List</h5>
-            </Card.Header>
-            <Card.Body>
-              <Table hover responsive>
-                <thead>
-                  <tr><th>Name</th><th>Qualification</th><th>Publications</th></tr>
-                </thead>
-                <tbody>
-                  {list.map((item, i) => (
-                    <tr key={i}>
-                      <td>{item.name}</td>
-                      <td>{item.qualification}</td>
-                      <td>{item.publications}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Card.Body>
+          <Card className="shadow-sm">
+            <Card.Header className="bg-white py-3 fw-bold">Active Faculty List</Card.Header>
+            <Table hover responsive className="mb-0">
+              <thead><tr><th>Name</th><th>Qualification</th></tr></thead>
+              <tbody>
+                {list.map((item, i) => (
+                  <tr key={i}>
+                    <td className="fw-bold">{item.name}</td>
+                    <td><Badge bg="light" text="dark">{item.qualification}</Badge></td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </Card>
         </Col>
       </Row>
