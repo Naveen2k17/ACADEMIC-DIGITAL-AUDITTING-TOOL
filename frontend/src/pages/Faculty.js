@@ -1,7 +1,7 @@
 import { Container, Form, Button, Card, Row, Col, FloatingLabel, Table, Badge, Modal } from "react-bootstrap";
 import API from "../services/api";
-import { useState, useEffect } from "react";
-import { Search, Users, Trash2, Edit3, X, Filter } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Search, Trash2, Edit3 } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function Faculty() {
@@ -16,7 +16,7 @@ export default function Faculty() {
 
   const depts = ["Computer Science (CSE)", "Information Technology (IT)", "Electronics (ECE)", "Mechanical (MECH)"];
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       let url = "/faculty";
       if (filterDept !== "All") url += `?department=${encodeURIComponent(filterDept)}`;
@@ -25,9 +25,9 @@ export default function Faculty() {
     } catch (e) {
       toast.error("Error loading faculty");
     }
-  };
+  }, [filterDept]);
 
-  useEffect(() => { fetchData(); }, [filterDept]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleSave = async () => {
     try {

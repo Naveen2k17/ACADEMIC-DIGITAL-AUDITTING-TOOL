@@ -1,6 +1,6 @@
 import { Container, Form, Button, Card, Row, Col, FloatingLabel, Table, Badge, Modal, Alert, InputGroup } from "react-bootstrap";
 import API from "../services/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { UserPlus, Eye, Pencil, Trash2, Search, Upload } from "lucide-react";
 
 export default function CourseAssignment() {
@@ -28,9 +28,9 @@ export default function CourseAssignment() {
 
   useEffect(() => {
     fetchAll();
-  }, [assignmentPage]);
+  }, [fetchAll]);
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     try {
       const [c, s, a, f] = await Promise.all([
         API.get("/courses"),
@@ -46,7 +46,7 @@ export default function CourseAssignment() {
     } catch (e) {
       console.error("Error fetching data:", e);
     }
-  };
+  }, [assignmentPage, role]);
 
   const handleStudentToggle = (student) => {
     const already = form.students.find(s => s.studentId === student._id);
