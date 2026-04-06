@@ -1,60 +1,229 @@
-.App {
-  text-align: center;
-}
+/* App Global UI & Animations */
 
-body {
-  background-color: #f4f7f6;
-  font-family: 'Inter', -apple-system, sans-serif;
-}
-.card {
-  border: none;
-  border-radius: 12px;
-  transition: transform 0.2s;
-}
-.btn-primary {
-  border-radius: 8px;
-  font-weight: 600;
-  padding: 10px 20px;
-}
-.table thead th {
-  background-color: #f8f9fa;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-  color: #6c757d;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+/* Background animation */
+.app-container {
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.bg-mesh {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background: var(--bg-color);
+  overflow: hidden;
+}
+
+.bg-mesh::before, .bg-mesh::after {
+  content: "";
+  position: absolute;
+  width: 50vw;
+  height: 50vw;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  animation: float 20s infinite alternate ease-in-out;
+}
+
+.bg-mesh::before {
+  top: -10vw;
+  left: -10vw;
+  background: var(--primary-color);
+}
+
+.bg-mesh::after {
+  bottom: -10vw;
+  right: -10vw;
+  background: var(--secondary-color);
+  animation-delay: -10s;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(10vw, 10vh) scale(1.2); }
+}
+
+/* Glassmorphism Classes */
+.glass-card {
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border) !important;
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px !important;
+  color: var(--text-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-nav {
+  background: var(--nav-bg) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 0.4s ease;
+}
+
+.glass-input {
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  color: var(--input-text) !important;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  background: var(--input-bg) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25) !important;
+  color: var(--input-text) !important;
+}
+
+/* Overriding Bootstrap elements */
+.text-primary { color: var(--primary-color) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.bg-white { background-color: var(--card-bg) !important; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 10px 24px;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(99, 102, 241, 0.39);
+  background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* Gradients text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
+/* Entrance Animations */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+/* Form Overrides */
+.form-label {
+  color: var(--text-color);
+}
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+.floating-label-custom > label {
+  color: var(--text-muted);
+}
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: var(--primary-color);
+  background-color: transparent !important;
+}
+.form-floating > label {
+  color: var(--text-muted);
+}
+.form-floating>.form-control:focus~label::after,
+.form-floating>.form-control:not(:placeholder-shown)~label::after {
+  background-color: transparent !important;
+}
+
+/* Tables */
+.table {
+  color: var(--text-color);
+}
+.table thead th {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--card-border);
+}
+[data-theme='dark'] .table thead th {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.table td {
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Badges */
+.badge.bg-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)) !important;
+}
+
+/* specific colors for stat cards borders */
+.border-primary { border-color: var(--primary-color) !important; }
+.border-success { border-color: var(--success-color) !important; }
+.border-warning { border-color: var(--warning-color) !important; }
+.border-info { border-color: var(--info-color) !important; }
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Links */
+a {
+  color: var(--primary-color);
+  transition: all 0.2s;
+}
+a:hover {
+  color: var(--primary-hover);
+}
+
+.navbar-nav .nav-link {
+  color: var(--text-color) !important;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: var(--primary-color);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover::after {
+  width: 80%;
 }
