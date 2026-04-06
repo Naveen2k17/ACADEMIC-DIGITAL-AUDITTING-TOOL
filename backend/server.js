@@ -47,8 +47,9 @@ mainRouter.use('/', submissionRoutes);
 mainRouter.use('/complaints', complaintRoutes);
 
 // Mount mainRouter for both local development and Vercel production paths
-app.use('/api', mainRouter);
+app.use('/_/backend', mainRouter);
 app.use('/', mainRouter);
+
 
 
 // Error Handling Middleware
