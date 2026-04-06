@@ -33,16 +33,23 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/', authRoutes);
-app.use('/admin', userRoutes);
-app.use('/faculty', facultyRoutes);
-app.use('/students', studentRoutes);
-app.use('/courses', courseRoutes);
-app.use('/infra', infraRoutes);
-app.use('/', auditRoutes);
-app.use('/assignments', assignmentRoutes);
-app.use('/', submissionRoutes); 
-app.use('/complaints', complaintRoutes);
+const mainRouter = express.Router();
+
+mainRouter.use('/', authRoutes);
+mainRouter.use('/admin', userRoutes);
+mainRouter.use('/faculty', facultyRoutes);
+mainRouter.use('/students', studentRoutes);
+mainRouter.use('/courses', courseRoutes);
+mainRouter.use('/infra', infraRoutes);
+mainRouter.use('/', auditRoutes);
+mainRouter.use('/assignments', assignmentRoutes);
+mainRouter.use('/', submissionRoutes); 
+mainRouter.use('/complaints', complaintRoutes);
+
+// Mount mainRouter for both local development and Vercel production paths
+app.use('/api', mainRouter);
+app.use('/', mainRouter);
+
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
