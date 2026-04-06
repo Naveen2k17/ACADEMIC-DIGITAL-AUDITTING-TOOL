@@ -1,6 +1,6 @@
 import { Container, Card, Row, Col, Badge, Button, Modal, Form, Alert, Tab, Tabs } from "react-bootstrap";
 import API from "../services/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CheckCircle, XCircle, MessageSquare, Eye, Clock, BookOpen, FileText } from "lucide-react";
 
 const statusColors = {
@@ -164,16 +164,16 @@ export default function HODApprovals() {
   const [filter, setFilter] = useState("Pending");
   const [successMsg, setSuccessMsg] = useState(null);
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     const [pubs, syls] = await Promise.all([
       API.get("/publications/all"),
       API.get("/syllabus/all")
     ]);
     setPublications(pubs.data.data || []);
     setSyllabi(syls.data.data || []);
-  };
+  }, []);
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const handlePublicationAction = async (id, status, remarks) => {
     try {

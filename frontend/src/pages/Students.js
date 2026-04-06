@@ -1,7 +1,7 @@
 import { Container, Form, Button, Card, Row, Col, FloatingLabel, Table, Badge, Modal } from "react-bootstrap";
 import API from "../services/api";
-import { useState, useEffect } from "react";
-import { Search, GraduationCap, Trash2, Edit3, X, Filter } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Search, Trash2, Edit3 } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function Students() {
@@ -24,7 +24,17 @@ export default function Students() {
 
   const depts = ["Computer Science (CSE)", "Information Technology (IT)", "Electronics (ECE)", "Mechanical (MECH)"];
 
-  const fetchData = async () => {
+  const fetchAssignments = useCallback(async () => {
+    try {
+      const aRes = await API.get(`/assignments/my?page=${assignmentPage}&limit=5`);
+      setAssignments(aRes.data.data || []);
+      setAssignmentTotalPages(aRes.data.pages || 1);
+    } catch (e) {
+      toast.error("Error loading assignments");
+    }
+  }, [assignmentPage]);
+
+  const fetchData = useCallback(async () => {
     try {
       let url = "/students";
       const params = new URLSearchParams();
@@ -43,20 +53,15 @@ export default function Students() {
     } catch (e) {
       toast.error("Error loading data");
     }
-  };
+  }, [filterDept, filterYear, page, role, fetchAssignments]);
 
-  const fetchAssignments = async () => {
-    try {
-      const aRes = await API.get(`/assignments/my?page=${assignmentPage}&limit=5`);
-      setAssignments(aRes.data.data || []);
-      setAssignmentTotalPages(aRes.data.pages || 1);
-    } catch (e) {
-      toast.error("Error loading assignments");
-    }
-  };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  useEffect(() => { fetchData(); }, [filterDept, filterYear, page]);
-  useEffect(() => { if (role === "Student") fetchAssignments(); }, [assignmentPage]);
+  useEffect(() => {
+    if (role === "Student") fetchAssignments();
+  }, [assignmentPage, role, fetchAssignments]);
 
   const handleSave = async () => {
     try {
