@@ -37,18 +37,36 @@ app.use(cors());
 app.use(express.json());
 
 // Health check to verify backend is up on Vercel
-app.get('/health', (req, res) => res.json({ status: "ok", time: new Date() }));
-app.get('/_/backend/health', (req, res) => res.json({ status: "ok", time: new Date() }));
+app.get('/health', (req, res) => res.json({ 
+    status: "ok", 
+    db_uri_defined: !!process.env.MONGO_URI,
+    time: new Date() 
+}));
+app.get('/_/backend/health', (req, res) => res.json({ 
+    status: "ok", 
+    db_uri_defined: !!process.env.MONGO_URI,
+    time: new Date() 
+}));
 
 // Manual Setup/Seed Route
 app.get('/_/backend/setup', async (req, res) => {
+    if (!process.env.MONGO_URI) {
+        return res.status(500).json({ error: "MONGO_URI is NOT defined in Vercel Environment Variables!" });
+    }
     try {
         const { seedDefaultAdmin, seedLargeStructuredData } = require('./utils/seeder');
         await seedDefaultAdmin();
         await seedLargeStructuredData();
-        res.json({ message: "Database Setup & Seeding Complete!" });
+        res.json({ 
+            message: "Database Setup & Seeding Complete!",
+            db_status: "connected"
+        });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ 
+            error: "Seeding failed", 
+            details: err.message,
+            db_uri_detected: !!process.env.MONGO_URI 
+        });
     }
 });
 
