@@ -13,7 +13,7 @@ const schemas = {
     facultyName: Joi.string().required(),
     courseName: Joi.string().required(),
     semester: Joi.string().required(),
-    section: Joi.string().required(),
+    section: Joi.string().allow(''),
     students: Joi.array().items(
       Joi.object({
         studentId: Joi.string().required(),
