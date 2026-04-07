@@ -20,52 +20,42 @@ const complaintRoutes = require('./routes/complaintRoutes');
 
 const app = express();
 
-// Connect Database
-connectDB();
+// Connect Database and Auto-Seed if empty
+connectDB().then(async () => {
+    try {
+        const User = require('./models/User');
+        const userCount = await User.countDocuments();
+        if (userCount <= 1) { // Only Admin or Empty
+             const { seedDefaultAdmin, seedLargeStructuredData } = require('./utils/seeder');
+             await seedDefaultAdmin();
+             await seedLargeStructuredData();
+             console.log("Database Auto-Seeded successfully.");
+        }
+    } catch (err) {
+        console.error("Auto-Seed Warning:", err.message);
+    }
+});
 
 // Middleware
-app.use(helmet({ contentSecurityPolicy: false })); // Disable CSP to avoid Vercel blocking
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
-// Health check to verify backend is up on Vercel
-app.get('/health', (req, res) => res.json({ 
-    status: "ok", 
-    db_uri_defined: !!process.env.MONGO_URI,
-    time: new Date() 
-}));
-app.get('/_/backend/health', (req, res) => res.json({ 
-    status: "ok", 
-    db_uri_defined: !!process.env.MONGO_URI,
-    time: new Date() 
-}));
-
-// Manual Setup/Seed Route
-app.get('/_/backend/setup', async (req, res) => {
-    if (!process.env.MONGO_URI) {
-        return res.status(500).json({ error: "MONGO_URI is NOT defined in Vercel Environment Variables!" });
-    }
+// Main Health/Debug Routes
+app.get('/_/backend/health', async (req, res) => {
     try {
-        const { seedDefaultAdmin, seedLargeStructuredData } = require('./utils/seeder');
-        await seedDefaultAdmin();
-        await seedLargeStructuredData();
+        const User = require('./models/User');
         res.json({ 
-            message: "Database Setup & Seeding Complete!",
-            db_status: "connected"
+            status: "ready", 
+            db_connected: true,
+            user_count: await User.countDocuments()
         });
-    } catch (err) {
-        res.status(500).json({ 
-            error: "Seeding failed", 
-            details: err.message,
-            db_uri_detected: !!process.env.MONGO_URI 
-        });
-    }
+    } catch (e) { res.json({ status: "error", msg: e.message }); }
 });
 
 // Routes
 const mainRouter = express.Router();
-
 mainRouter.use('/', authRoutes);
 mainRouter.use('/admin', userRoutes);
 mainRouter.use('/faculty', facultyRoutes);
@@ -77,7 +67,7 @@ mainRouter.use('/assignments', assignmentRoutes);
 mainRouter.use('/', submissionRoutes); 
 mainRouter.use('/complaints', complaintRoutes);
 
-// Mount mainRouter for both local development and Vercel production paths
+// Vercel path mounting
 app.use('/_/backend', mainRouter);
 app.use('/', mainRouter);
 
