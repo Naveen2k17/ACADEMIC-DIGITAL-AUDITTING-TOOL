@@ -21,14 +21,7 @@ const complaintRoutes = require('./routes/complaintRoutes');
 const app = express();
 
 // Connect Database
-connectDB().then(async () => {
-    try {
-        await seedDefaultAdmin();
-        await seedLargeStructuredData();
-    } catch (err) {
-        console.error("Seeder Error:", err.message);
-    }
-});
+connectDB();
 
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false })); // Disable CSP to avoid Vercel blocking
