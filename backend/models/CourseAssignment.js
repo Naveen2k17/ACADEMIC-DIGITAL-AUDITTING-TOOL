@@ -5,7 +5,7 @@ const CourseAssignmentSchema = new mongoose.Schema({
   facultyName: { type: String, required: true },
   courseName: { type: String, required: true },
   semester: { type: String, required: true },
-  section: { type: String, required: true },
+  section: { type: String, default: "" },
   students: [{ 
     studentId: String, 
     studentName: String,
