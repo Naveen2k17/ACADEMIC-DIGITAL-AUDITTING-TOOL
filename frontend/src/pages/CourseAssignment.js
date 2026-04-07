@@ -26,10 +26,6 @@ export default function CourseAssignment() {
   const [assignmentPage, setAssignmentPage] = useState(1);
   const [assignmentTotalPages, setAssignmentTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
-
   const fetchAll = useCallback(async () => {
     try {
       const [c, s, a, f] = await Promise.all([
@@ -48,6 +44,10 @@ export default function CourseAssignment() {
     }
   }, [assignmentPage, role]);
 
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
+
   const handleStudentToggle = (student) => {
     const already = form.students.find(s => s.studentId === student._id);
     if (already) {
@@ -56,6 +56,12 @@ export default function CourseAssignment() {
       setForm({ ...form, students: [...form.students, { studentId: student._id, studentName: student.name }] });
     }
   };
+
+  const resetForm = useCallback(() => {
+    setIsEditing(false);
+    setEditId(null);
+    setForm({ facultyId: "", facultyName: "", courseName: "", semester: "", section: "", students: [] });
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -134,12 +140,6 @@ export default function CourseAssignment() {
     } else {
       alert("No matching students found in the list.");
     }
-  };
-
-  const resetForm = () => {
-    setIsEditing(false);
-    setEditId(null);
-    setForm({ facultyId: "", facultyName: "", courseName: "", semester: "", section: "", students: [] });
   };
 
   const filteredStudents = students.filter(s => 
