@@ -22,15 +22,23 @@ const app = express();
 
 // Connect Database
 connectDB().then(async () => {
-  await seedDefaultAdmin();
-  await seedLargeStructuredData();
+    try {
+        await seedDefaultAdmin();
+        await seedLargeStructuredData();
+    } catch (err) {
+        console.error("Seeder Error:", err.message);
+    }
 });
 
 // Middleware
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false })); // Disable CSP to avoid Vercel blocking
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
+
+// Health check to verify backend is up on Vercel
+app.get('/health', (req, res) => res.json({ status: "ok", time: new Date() }));
+app.get('/_/backend/health', (req, res) => res.json({ status: "ok", time: new Date() }));
 
 // Routes
 const mainRouter = express.Router();
