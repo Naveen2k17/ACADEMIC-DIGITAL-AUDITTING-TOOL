@@ -40,6 +40,18 @@ app.use(express.json());
 app.get('/health', (req, res) => res.json({ status: "ok", time: new Date() }));
 app.get('/_/backend/health', (req, res) => res.json({ status: "ok", time: new Date() }));
 
+// Manual Setup/Seed Route
+app.get('/_/backend/setup', async (req, res) => {
+    try {
+        const { seedDefaultAdmin, seedLargeStructuredData } = require('./utils/seeder');
+        await seedDefaultAdmin();
+        await seedLargeStructuredData();
+        res.json({ message: "Database Setup & Seeding Complete!" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Routes
 const mainRouter = express.Router();
 
