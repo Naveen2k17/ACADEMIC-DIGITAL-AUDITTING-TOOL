@@ -151,7 +151,7 @@ const seedLargeStructuredData = async () => {
             const assignedStudents = shuffledStudents.map(s => ({
                 studentId: s._id,
                 studentName: s.name,
-                attendance: 0,
+                attendance: 75 + Math.floor(Math.random() * 20), // Start with realistic attendance
                 grade: ''
             }));
 
