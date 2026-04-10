@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: process.env.NODE_ENV === "production" ? "/_/backend" : "http://localhost:5000",
+  baseURL: process.env.REACT_APP_API_URL || (process.env.NODE_ENV === "production" ? "https://academic-digital-auditting-tool.onrender.com" : "http://localhost:5000"),
 });
 
 API.interceptors.request.use((config) => {

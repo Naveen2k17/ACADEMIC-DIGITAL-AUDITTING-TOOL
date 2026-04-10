@@ -1,5 +1,5 @@
 import { Container, Form, Button, Card, FloatingLabel, Alert } from "react-bootstrap";
-import axios from "axios";
+import API from "../services/api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +12,7 @@ export default function Login() {
 
   const login = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/login", data);
+      const res = await API.post("/login", data);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
       navigate("/dashboard");
@@ -24,7 +24,7 @@ export default function Login() {
       if (data.newPassword !== data.confirmPassword) {
         setErrorMsg("New passwords do not match"); return;
       }
-      const res = await axios.put("http://localhost:5000/change-password", {
+      const res = await API.put("/change-password", {
         email: data.email,
         currentPassword: data.password,
         newPassword: data.newPassword
