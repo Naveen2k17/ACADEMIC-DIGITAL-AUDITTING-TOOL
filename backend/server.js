@@ -1,5 +1,11 @@
 require('dotenv').config();
 const express = require('express');
+
+console.log("--- Server Starting ---");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("PORT:", process.env.PORT);
+console.log("MONGO_URI present:", !!process.env.MONGO_URI);
+
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
