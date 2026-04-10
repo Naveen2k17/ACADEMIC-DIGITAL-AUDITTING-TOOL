@@ -34,6 +34,9 @@ connectDB().then(async () => {
     } catch (err) {
         console.error("Auto-Seed Warning:", err.message);
     }
+}).catch(err => {
+    console.error("Fatal: failed to connect to database:", err);
+    process.exit(1);
 });
 
 // Middleware
