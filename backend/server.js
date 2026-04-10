@@ -1,6 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 
+try {
+    require('aws4');
+    console.log("aws4 module loaded successfully");
+} catch (e) {
+    console.error("Warning: aws4 module missing, MongoDB AWS auth may fail:", e.message);
+}
+
 console.log("--- Server Starting ---");
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("PORT:", process.env.PORT);
